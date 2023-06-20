@@ -15,7 +15,7 @@ class _CounterPageState extends State<CounterPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Counter Page",
+          "Counter",
         ),
         backgroundColor: Colors.amber,
       ),
@@ -24,14 +24,33 @@ class _CounterPageState extends State<CounterPage> {
         count.toString(),
         style: Theme.of(context).textTheme.headlineLarge,
       )),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => {
-          setState(() {
-            count++;
-          }),
-          print("button pressed count : $count")
-        },
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          FloatingActionButton(
+            child: Icon(Icons.add),
+            onPressed: () => {
+              setState(() {
+                count++;
+              }),
+              print("button pressed count : $count")
+            },
+          ),
+          SizedBox(
+            width: 8,
+          ),
+          FloatingActionButton(
+            child: Icon(Icons.remove),
+            onPressed: () => {
+              setState(() {
+                if (count != 0) {
+                  count--;
+                }
+              }),
+              print("button pressed count : $count")
+            },
+          ),
+        ],
       ),
     );
   }
