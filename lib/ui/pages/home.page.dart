@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/ui/layouts/ActionsSection.dart';
-import 'package:todo_app/ui/layouts/BarheaderSection.dart';
-import 'package:todo_app/ui/layouts/headerSection.dart';
+import 'package:todo_app/ui/layouts/action_section.dart';
+import 'package:todo_app/ui/layouts/barheader_section.dart';
+import 'package:todo_app/ui/layouts/header_section.dart';
 import 'package:todo_app/ui/widgets/drawer.widget.dart';
 
 class HomePage extends StatelessWidget {

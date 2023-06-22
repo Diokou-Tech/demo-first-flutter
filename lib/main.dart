@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
             primarySwatch: Colors.amber, primaryColor: Colors.deepOrange),
         home: HomePage(),
+        debugShowCheckedModeBanner: false,
         initialRoute: "/home");
   }
 }

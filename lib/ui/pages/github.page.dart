@@ -16,21 +16,29 @@ class _GithubPageState extends State<GithubPage> {
   bool notVisible = false;
   TextEditingController queryTextController = TextEditingController();
   dynamic datas;
+  //pagination
+  int page = 0;
+  int perPage = 10;
 
+// search users on github with selection query
   void _search(String query) {
-    var client = http.Client();
-
-    String url =
-        "https://api.github.com/search/users?q=$query&per_page=5&page=0";
-    try {
-      var response = client.get(Uri.parse(url));
-      response.then((value) => {
-            setState(() {
-              datas = json.decode(value.body);
-            })
-          });
-    } catch (e) {
-      print("une exception est levee !");
+    if (query.isNotEmpty) {
+      var client = http.Client();
+      String url =
+          "https://api.github.com/search/users?q=$query&per_page=$perPage&page=$page";
+      try {
+        var response = client.get(Uri.parse(url));
+        response.then((value) => {
+              setState(() {
+                datas = json.decode(value.body);
+                print(datas);
+              })
+            });
+      } catch (e) {
+        print("une exception est levee !");
+      }
+    } else {
+      print("query null !");
     }
   }
 
@@ -53,13 +61,14 @@ class _GithubPageState extends State<GithubPage> {
                 Expanded(
                   child: TextFormField(
                     obscureText: notVisible,
-                    onChanged: (value) => {
+                    onFieldSubmitted: (value) => {
                       setState(() {
                         queryText = value;
                       })
                     },
                     controller: queryTextController,
                     decoration: InputDecoration(
+                      labelText: "Votre recherche !",
                       suffixIcon: IconButton(
                         icon: notVisible == false
                             ? Icon(Icons.visibility)
@@ -73,7 +82,7 @@ class _GithubPageState extends State<GithubPage> {
                       contentPadding: EdgeInsets.only(left: 20),
                       border: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.amber, width: 1),
-                          borderRadius: BorderRadius.circular(50)),
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                   ),
                 ),
@@ -82,12 +91,40 @@ class _GithubPageState extends State<GithubPage> {
                     onPressed: () => {
                           setState(() => {
                                 queryText = queryTextController.text,
-                                _search(queryText)
+                                _search(queryText.toLowerCase())
                               }),
                         },
                     icon: Icon(Icons.search))
               ],
             ),
+          ),
+          Expanded(
+            child: ListView.builder(
+                padding: EdgeInsets.all(10),
+                itemCount: datas == null ? 0 : datas["items"].length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 35,
+                                backgroundImage: NetworkImage(
+                                    datas["items"][index]["avatar_url"] ?? ""),
+                              ),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              Text(datas['items'][index]['login'] ?? ""),
+                            ],
+                          ),
+                          CircleAvatar(child: Text("0.1")),
+                        ]),
+                  );
+                }),
           )
         ],
       )),

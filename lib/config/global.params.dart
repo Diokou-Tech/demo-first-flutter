@@ -45,7 +45,7 @@ class GlobalParams {
     {
       "title": "Github",
       "icon": Icon(
-        Icons.wallet_giftcard_sharp,
+        Icons.code,
         color: Colors.amber,
       ),
       "route": "/github"
