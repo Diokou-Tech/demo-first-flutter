@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
+import 'package:todo_app/models/weather.response.dart';
 
 class MeteoPage extends StatefulWidget {
   @override
@@ -11,34 +12,37 @@ class MeteoPage extends StatefulWidget {
 class _MeteoPageState extends State<MeteoPage> {
   // attributs
   TextEditingController regionConroller = TextEditingController();
-  late String defaultRegion;
+  String defaultRegion = "dakar";
   dynamic weather;
   late String messageError;
-  void _getWeather(String city) {
+  Map? datas;
+  WeatherReponse? responseWeather;
+
+  void _getWeather(String city) async {
     if (city.isNotEmpty) {
-      var client = http.Client();
+      // var client = http.Client();
       String apiKey = "a323bd5f389298fc244779347939aa77";
       String urlWeather =
           "https://api.openweathermap.org/data/2.5/weather?q=$city,SN&appid=$apiKey&lang=fr";
-      var response = client.get(Uri.parse(urlWeather));
-      response.then((value) => {
-        setState((){
-        weather = json.decode(value.body);
-        }),
-        print(" Name :$weather[0]['name']")
-      }).catchError((onError) => {
-        print(onError.toString()),
-        messageError = onError.toString()
-      });
+      http.Response response = await http.get(Uri.parse(urlWeather));
+      if (response.statusCode == 200) {
+        setState(() {
+          String responseString = response.body;
+          var dataMap = jsonDecode(responseString);
+          responseWeather = WeatherReponse.fromJson(dataMap);
+          print(responseWeather.toString());
+        });
+      }else{
+        print("Erreur Requete !");
+      }
     }
   }
 
   @override
   void initState() {
-    super.initState();
-    defaultRegion = "Dakar";
     messageError = "";
     _getWeather(defaultRegion);
+    super.initState();
   }
 
   @override
@@ -64,7 +68,6 @@ class _MeteoPageState extends State<MeteoPage> {
                       tooltip: "Effacer",
                       icon: Icon(Icons.cancel),
                       onPressed: () {
-                        print("Delete text zone ");
                         regionConroller.clear();
                       })),
               onFieldSubmitted: (value) {
@@ -72,8 +75,7 @@ class _MeteoPageState extends State<MeteoPage> {
               },
             ),
           ),
-          SingleChildScrollView(
-            scrollDirection: Axis.vertical,
+          Expanded(
             child: Card(
               shadowColor: Colors.amber,
               elevation: 9.0,
@@ -93,6 +95,10 @@ class _MeteoPageState extends State<MeteoPage> {
                         //   style: TextStyle(fontFamily: "cambria", fontSize: 30),
                         // ),
                         Text(
+                          " Dakar, SN",
+                          style: TextStyle(fontFamily: "cambria", fontSize: 30),
+                        ),
+                        Text(
                           "39°",
                           style: TextStyle(
                               fontFamily: "cambria",
@@ -100,11 +106,13 @@ class _MeteoPageState extends State<MeteoPage> {
                               color: Colors.amber,
                               fontWeight: FontWeight.bold),
                         ),
-                        Text(messageError, 
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.red,
-                        ),)
+                        Text(
+                          messageError,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.red,
+                          ),
+                        )
                       ],
                     ),
                   ),
